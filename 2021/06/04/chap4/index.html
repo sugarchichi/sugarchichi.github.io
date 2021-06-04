@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;example.com&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Muse&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;Searching...&quot;,&quot;empty&quot;:&quot;We didn&#39;t find any results for the search: ${query}&quot;,&quot;hits_time&quot;:&quot;${hits} results found in ${time} ms&quot;,&quot;hits&quot;:&quot;${hits} results found&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="对数据预处理部分的标准化&#x2F;归一化&#x2F;正态化的总结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="特征缩放总结（标准化&#x2F;归一化&#x2F;正态化）">
+<meta property="og:url" content="http://example.com/2021/06/04/chap4/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="对数据预处理部分的标准化&#x2F;归一化&#x2F;正态化的总结">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-06-04T15:55:36.000Z">
+<meta property="article:modified_time" content="2021-06-04T16:00:57.660Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Standardzation">
+<meta property="article:tag" content="normalization">
+<meta property="article:tag" content="特征缩放">
+<meta property="article:tag" content="数据分布">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/06/04/chap4/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;en&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;http:&#x2F;&#x2F;example.com&#x2F;2021&#x2F;06&#x2F;04&#x2F;chap4&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;04&#x2F;chap4&#x2F;&quot;,&quot;title&quot;:&quot;特征缩放总结（标准化&#x2F;归一化&#x2F;正态化）&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>特征缩放总结（标准化/归一化/正态化） | Hexo</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Hexo</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#python%E5%AE%9E%E7%8E%B0%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">python实现：</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/04/chap4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          特征缩放总结（标准化/归一化/正态化）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-06-04 23:55:36" itemprop="dateCreated datePublished" datetime="2021-06-04T23:55:36+08:00">2021-06-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-06-05 00:00:57" itemprop="dateModified" datetime="2021-06-05T00:00:57+08:00">2021-06-05</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>对数据预处理部分的标准化/归一化/正态化的总结</p>
+<span id="more"></span>
+<p>特征缩放概念（what）：将数据乘以或者除以一个常数的线形变换，此操作并不改变数据的分布，只涉及数据取值范围或者是数据的描述统计量的变化，分为标准化和正态化。<br>什么时候要进行特征缩放（when）：<br>1.量纲不同<br>2.涉及到距离：欧式距离<br>3.梯度下降算法</p>
+<p>怎么进行特征缩放（how）：标准化/归一化/正态化<br>标准化（standardization）：通过一定的数学变换方式，将原始数据按照一定的比例进行转换，使之落入到一个小的特定区间内，例如0<del>1或-1</del>1的区间内，消除不同变量之间性质、量纲、数量级等特征属性的差异，将其转化为一个无量纲的相对数值，也就是标准化数值，使各指标的数值都处于同一个数量级别上，从而便于不同单位或数量级的指标能够进行综合分析和比较。所以总结一下，标准化的目的：把特征的各个维度标准化到特定的区间，把有量纲表达式变为无量纲表达式。<br>标准化可以分为z-score、归一化（MinMax/MaxAbs）、正态化（normalization）。</p>
+<p>z-score：此种变换就是将原始数据转换为均值为0，方差为1的和原始分布一样的分布（不一定是正态分布），公式如下：</p>
+<p>Z-Score的优缺点<br>优点：简单、易于计算、适用于数值型数据，不受数据量级的影响<br>缺点：需要用到整个数据集的方差和均值（通常用样本的均值和方差代替）、不适用于有异常值的场景（此时可以使用robuster-scale）<br>注意：<br>1.不改变原始数据的分布：此处经过z-score转换之后的数据并不一定是服从标准正态分布，是不是正态分布取决于原始数据的分布，如果原始数据是正态分布（或者数据量够大，根据中心极限定理可以近似认为原始数据是服从正态分布），那么转换之后也是正态分布<br>2.此处经过z-score转换之后的数据的均值为0，方差为1，但是转换之后的数据范围是不确定的，这和其他变换有所不同；<br>3.使用z-score变换一般会有一个前提条件，数据满足正态分布，但是也有一部分数据是不满足正态分布的条件的，此时也是可以使用z-score的（只是当数据是正态分布的时候效果最佳），也可以先对数据进行正态化处理之后再做z-score。关于此部分的理论本人暂时并未了解到，期待被科普；<br>4.z-score变换之后的值没有实际意义，只是用于比较；</p>
+<h2 id="python实现："><a href="#python实现：" class="headerlink" title="python实现："></a>python实现：</h2><blockquote>
+<blockquote>
+<blockquote>
+<p>fromsklearn.preprocessingimportStandardScaler<br>data=[[0,0],[0,0],[1,1],[1,1]]<br>scaler=StandardScaler()<br>print(scaler.fit(data))<br>StandardScaler()<br>print(scaler.mean_)<br>[0.50.5]<br>print(scaler.transform(data))<br>[[-1.-1.]<br>[-1.-1.]<br>[1.1.]<br>[1.1.]]<br>print(scaler.transform([[2,2]]))<br>[[3.3.]]</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>归一化（MinMax/MaxAbs）<br>MinMax：利用了边界值信息，找出每个属性的最小值和最大值，将原始值映射在区间[0,1]中的值。公式如下：</p>
+<p>缺点：对异常值非常敏感，抗干扰能力弱<br>注意：MinMax不改变原来数据的分布，只是改变取值范围<br>python实现：</p>
+<hr>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>fromsklearn.preprocessingimportMinMaxScaler<br>data=[[-1,2],[-0.5,6],[0,10],[1,18]]<br>scaler=MinMaxScaler()<br>print(scaler.fit(data))<br>MinMaxScaler()<br>print(scaler.data_max_)<br>[1.18.]<br>print(scaler.transform(data))<br>[[0.0.]<br>[0.250.25]<br>[0.50.5]<br>[1.1.]]<br>print(scaler.transform([[2,2]]))<br>[[1.50.]]</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>MaxAbs：利用最大边界值信息，找到每个属性的最大值，将原始数据映射到[-1,1]，公式如下：</p>
+<p>优点：不会移动或者居中数据，因此不会破坏任何稀疏性<br>缺点：受异常值影响较大<br>注意：MaxAbs不改变原来数据的分布，只是改变数据的取值范围<br>python实现：</p>
+<hr>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>fromsklearn.preprocessingimportMaxAbsScaler<br>X=[[1.,-1.,2.],<br>…[2.,0.,0.],<br>…[0.,1.,-1.]]<br>transformer=MaxAbsScaler().fit(X)<br>transformer<br>MaxAbsScaler()<br>transformer.transform(X)<br>array([[0.5,-1.,1.],<br>[1.,0.,0.],<br>[0.,1.,-0.5]])</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>正态化（normalization）：这个有时候会翻译成正则化/归一化，表达的都是一个意思。注意与机器学习中的正则化区别开。<br>我的理解是：之前是利用边界信息或者其他统计量进行缩放，现在是通过引入范数，将原始数据利用范数进行缩放，变换之后的数据范围是[0,1]，这样的话可以使得所有变换之后数据和为1，在相似这里很有用。<br>而范数可以参考这篇：<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/yangpan011/article/details/79461846?utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-4.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-4.control">https://blog.csdn.net/yangpan011/article/details/79461846?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.control</a><br>python中提供的范数有L1，L2，Max，计算公式如下</p>
+<p>python实现：<br>fromsklearn.preprocessingimportNormalizer<br>Normalizer(norm=’l1’).fit_transform(X)<br>Normalizer(norm=’l2’).fit_transform(X)<br>Normalizer(norm=’max’).fit_transform(X)</p>
+<ol>
+<li>缩放到均值为0，方差为1（Standardization——StandardScaler()）—–不改变数据的分布，是不是正态分布取决于原始分布是不是正态分布，如果数据量很大的时候可以依据中心极限定理近似看作是正态分布—-只是限定了均值和方差，并不能确定数据的取值范围</li>
+<li>缩放到0和1之间（Standardization——MinMaxScaler()）—-限定了变换之后的数据范围</li>
+<li>缩放到-1和1之间（Standardization——MaxAbsScaler()）—-限定了变换之后的数据范围</li>
+<li>缩放到0和1之间，保留原始数据的分布（Normalization——Normalizer()）——不改变数据的分布，只是数据的缩放</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Standardzation/" rel="tag"># Standardzation</a>
+              <a href="/tags/normalization/" rel="tag"># normalization</a>
+              <a href="/tags/%E7%89%B9%E5%BE%81%E7%BC%A9%E6%94%BE/" rel="tag"># 特征缩放</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E5%B8%83/" rel="tag"># 数据分布</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/03/chap3/" rel="prev" title="mac系统下搭建博客全过程：Hexo+github">
+                  <i class="fa fa-chevron-left"></i> mac系统下搭建博客全过程：Hexo+github
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
